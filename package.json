@@ -1,0 +1,23 @@
+{
+  "name": "forest-path",
+  "private": true,
+  "version": "1.0.0",
+  "description": "숲속 길잇기 — N×N 격자 두뇌 퍼즐 (Forest Path)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "gen": "node tools/generate.mjs"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "puppeteer-core": "^23.11.1",
+    "vite": "^5.4.11"
+  }
+}

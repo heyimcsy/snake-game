@@ -1,0 +1,17 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+
+# Environment / secrets — never commit real keys (use .env.example as the template)
+.env
+.env.local
+.env.*.local
+
+# Local Claude Code settings (machine-specific permissions)
+.claude/settings.local.json
+
+# OS / editor junk
+.DS_Store
+*.log
