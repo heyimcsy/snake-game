@@ -1,7 +1,8 @@
 -- Run this once in the Supabase SQL Editor.
--- Atomically bumps the global clear counter for a milestone level (3/6/10/15)
--- in the single-row "snake-game" table. SECURITY DEFINER lets the anon client
--- call it via rpc() without opening the table up to public UPDATEs.
+-- Atomically bumps the global clear counter for a milestone level
+-- (3/6/10/15/20/25/30) in the single-row "snake-game" table. SECURITY DEFINER
+-- lets the anon client call it via rpc() without opening the table up to public
+-- UPDATEs. (The count_20/count_25/count_30 columns must exist on the table.)
 
 create or replace function public.increment_snake_clear(level int)
 returns void
@@ -11,8 +12,8 @@ set search_path = public
 as $$
 begin
   -- make sure the single global row exists
-  insert into "snake-game" (count_3, count_6, count_10, count_15)
-  select 0, 0, 0, 0
+  insert into "snake-game" (count_3, count_6, count_10, count_15, count_20, count_25, count_30)
+  select 0, 0, 0, 0, 0, 0, 0
   where not exists (select 1 from "snake-game");
 
   -- bump only the matching milestone column. Target the single row by its
@@ -23,7 +24,10 @@ begin
     count_3  = coalesce(count_3, 0)  + (level = 3)::int,
     count_6  = coalesce(count_6, 0)  + (level = 6)::int,
     count_10 = coalesce(count_10, 0) + (level = 10)::int,
-    count_15 = coalesce(count_15, 0) + (level = 15)::int
+    count_15 = coalesce(count_15, 0) + (level = 15)::int,
+    count_20 = coalesce(count_20, 0) + (level = 20)::int,
+    count_25 = coalesce(count_25, 0) + (level = 25)::int,
+    count_30 = coalesce(count_30, 0) + (level = 30)::int
   where ctid = (select ctid from "snake-game" limit 1);
 end;
 $$;
@@ -31,7 +35,7 @@ $$;
 grant execute on function public.increment_snake_clear(int) to anon, authenticated;
 
 
--- Read the current clear count for a milestone level (3/6/10/15).
+-- Read the current clear count for a milestone level (3/6/10/15/20/25/30).
 -- SECURITY DEFINER so the anon client can read the count via rpc() without a
 -- SELECT policy on the table.
 create or replace function public.get_snake_clear_count(level int)
@@ -46,6 +50,9 @@ as $$
     when 6  then count_6
     when 10 then count_10
     when 15 then count_15
+    when 20 then count_20
+    when 25 then count_25
+    when 30 then count_30
     else null
   end
   from "snake-game"
@@ -53,3 +60,13 @@ as $$
 $$;
 
 grant execute on function public.get_snake_clear_count(int) to anon, authenticated;
+
+
+-- One-time backfill: newly added columns start as NULL on the existing global
+-- row, which would hide the "N cleared" line until the first clear. Set them to
+-- 0 so the count shows from the start. Safe to re-run (coalesce is idempotent).
+update "snake-game" set
+  count_20 = coalesce(count_20, 0),
+  count_25 = coalesce(count_25, 0),
+  count_30 = coalesce(count_30, 0)
+where ctid = (select ctid from "snake-game" limit 1);

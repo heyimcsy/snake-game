@@ -147,6 +147,36 @@ export function useGame(stage) {
     [startCell, wallSet, numberMap]
   );
 
+  // keyboard step: move the head one cell in a direction (dr, dc).
+  // Empty path -> place the head on the "1" cell. Stepping back onto the
+  // previous cell retraces (erases) it; otherwise it extends if the move is
+  // legal (in bounds, unvisited, no wall, numbers still in order).
+  const step = useCallback(
+    (dr, dc) => {
+      setPath((prev) => {
+        if (prev.length === 0) {
+          return startCell ? [[startCell[0], startCell[1]]] : prev;
+        }
+        const h = prev[prev.length - 1];
+        const target = [h[0] + dr, h[1] + dc];
+        if (target[0] < 0 || target[0] >= N || target[1] < 0 || target[1] >= N)
+          return prev;
+        // retrace: stepping onto the previous cell erases the last segment
+        if (prev.length >= 2) {
+          const p2 = prev[prev.length - 2];
+          if (p2[0] === target[0] && p2[1] === target[1]) return prev.slice(0, -1);
+        }
+        if (prev.some((p) => p[0] === target[0] && p[1] === target[1])) return prev;
+        if (wallSet.has(edgeKey(h[0], h[1], target[0], target[1]))) return prev;
+        const done = prev.filter((p) => numberMap.has(cellKey(p[0], p[1]))).length;
+        const v = numberMap.get(cellKey(target[0], target[1]));
+        if (v !== undefined && v !== done + 1) return prev;
+        return [...prev, target];
+      });
+    },
+    [startCell, N, wallSet, numberMap]
+  );
+
   const endDraw = useCallback(() => {
     drawingRef.current = false;
   }, []);
@@ -174,6 +204,7 @@ export function useGame(stage) {
     canExtendTo,
     pressCell,
     dragToCell,
+    step,
     endDraw,
     undo,
     reset,

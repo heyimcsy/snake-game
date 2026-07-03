@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; }
+      .card {
+        width: 1200px; height: 630px;
+        font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Pretendard", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="630" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#1e4530" />
+            <stop offset="0.55" stop-color="#173824" />
+            <stop offset="1" stop-color="#102b1c" />
+          </linearGradient>
+          <radialGradient id="sun" cx="18%" cy="12%" r="55%">
+            <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.35" />
+            <stop offset="1" stop-color="#ffe9a8" stop-opacity="0" />
+          </radialGradient>
+          <linearGradient id="snakeBody" x1="0" y1="120" x2="0" y2="560" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#8ed07a" />
+            <stop offset="1" stop-color="#3f8a3c" />
+          </linearGradient>
+          <radialGradient id="headGrad" cx="38%" cy="26%" r="82%">
+            <stop offset="0" stop-color="#9bd888" />
+            <stop offset="1" stop-color="#4a9741" />
+          </radialGradient>
+          <radialGradient id="appleGrad" cx="34%" cy="28%" r="80%">
+            <stop offset="0" stop-color="#ff7d68" />
+            <stop offset="1" stop-color="#c62828" />
+          </radialGradient>
+        </defs>
+
+        <!-- background -->
+        <rect width="1200" height="630" fill="url(#sky)" />
+        <rect width="1200" height="630" fill="url(#sun)" />
+
+        <!-- soft light dapples -->
+        <g fill="#ffe9a8" opacity="0.10">
+          <circle cx="240" cy="120" r="34" />
+          <circle cx="980" cy="90" r="26" />
+          <circle cx="1120" cy="250" r="40" />
+          <circle cx="120" cy="330" r="24" />
+        </g>
+
+        <!-- pine tree silhouettes -->
+        <g opacity="0.5">
+          <g fill="#12301f">
+            <polygon points="80,300 130,300 105,210" />
+            <polygon points="70,340 140,340 105,250" />
+            <rect x="99" y="335" width="12" height="30" fill="#2c1c10" />
+          </g>
+          <g fill="#123320">
+            <polygon points="1050,300 1110,300 1080,205" />
+            <polygon points="1038,345 1122,345 1080,250" />
+            <rect x="1073" y="340" width="14" height="34" fill="#2c1c10" />
+          </g>
+        </g>
+
+        <!-- rolling hills -->
+        <path d="M0 470 Q 300 400 600 460 T 1200 450 V630 H0 Z" fill="#22492f" />
+        <path d="M0 540 Q 350 470 720 520 T 1200 520 V630 H0 Z" fill="#1b3d27" />
+        <path d="M0 600 Q 400 560 820 590 T 1200 585 V630 H0 Z" fill="#153320" />
+
+        <!-- dotted puzzle-trail echo -->
+        <path d="M120 560 C 260 520 300 470 430 470 S 640 520 760 500"
+              fill="none" stroke="#fbeecb" stroke-opacity="0.18"
+              stroke-width="7" stroke-linecap="round" stroke-dasharray="2 26" />
+
+        <!-- ===== title block (left) ===== -->
+        <g>
+          <text x="70" y="250" font-size="112" font-weight="800" fill="#fbeecb"
+                style="letter-spacing:-2px">숲속 길잇기</text>
+          <text x="74" y="312" font-size="40" font-weight="800" fill="#ffcf6b">Forest Path</text>
+          <text x="74" y="372" font-size="31" font-weight="600" fill="#dfebdb" opacity="0.92">
+            모든 칸을 한 번씩, 숫자를 순서대로
+          </text>
+          <text x="74" y="414" font-size="31" font-weight="600" fill="#dfebdb" opacity="0.92">
+            이어 그리는 한 붓 숲길 퍼즐
+          </text>
+        </g>
+
+        <!-- ===== snake happily eating an apple (right) ===== -->
+        <g transform="translate(690 150)">
+          <!-- body shadow -->
+          <ellipse cx="215" cy="415" rx="185" ry="34" fill="#0d2416" opacity="0.45" />
+
+          <!-- snake body: dark outline + gradient body + light spine -->
+          <path id="snake" d="M70 360
+                   C 20 320 40 250 120 250
+                   C 210 250 235 320 300 320
+                   C 372 320 372 230 300 220
+                   C 250 213 250 170 300 165"
+                fill="none" stroke="#2f6330" stroke-width="96"
+                stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M70 360
+                   C 20 320 40 250 120 250
+                   C 210 250 235 320 300 320
+                   C 372 320 372 230 300 220
+                   C 250 213 250 170 300 165"
+                fill="none" stroke="url(#snakeBody)" stroke-width="80"
+                stroke-linecap="round" stroke-linejoin="round" />
+          <!-- belly highlight -->
+          <path d="M70 360
+                   C 20 320 40 250 120 250
+                   C 210 250 235 320 300 320
+                   C 372 320 372 230 300 220
+                   C 250 213 250 170 300 165"
+                fill="none" stroke="#bfe9a8" stroke-opacity="0.55" stroke-width="14"
+                stroke-linecap="round" stroke-dasharray="3 30" />
+
+          <!-- tail tip -->
+          <circle cx="70" cy="360" r="18" fill="#3f8a3c" />
+
+          <!-- apple (with a bite crescent facing the mouth) -->
+          <g transform="translate(392 132)">
+            <path d="M0 -34 C -26 -50 -50 -26 -46 -1 C -42 30 -20 46 0 41
+                     C 20 46 42 30 46 -1 C 50 -26 26 -50 0 -34 Z"
+                  fill="url(#appleGrad)" />
+            <!-- bite (matches sky-ish to look removed) -->
+            <path d="M46 -1 C 42 30 20 46 0 41 C 14 26 14 8 2 -2 C 14 -10 30 -10 46 -1 Z"
+                  fill="#173824" />
+            <ellipse cx="-16" cy="-14" rx="12" ry="7" fill="#ffffff" opacity="0.7" transform="rotate(-20 -16 -14)" />
+            <path d="M0 -34 q 2 -14 12 -20" stroke="#6d4c1b" stroke-width="6" fill="none" stroke-linecap="round" />
+            <path d="M4 -40 q 22 -14 30 6 q -22 12 -30 -6 Z" fill="#4f9e46" />
+          </g>
+
+          <!-- head (tilted toward the apple), happily eating -->
+          <g transform="translate(300 168) rotate(-14)">
+            <!-- head base -->
+            <ellipse cx="0" cy="0" rx="76" ry="64" fill="url(#headGrad)" stroke="#2f6330" stroke-width="7" />
+            <!-- top highlight -->
+            <ellipse cx="-22" cy="-36" rx="28" ry="12" fill="#ffffff" opacity="0.22" />
+            <!-- open mouth chomping the apple (up-right) -->
+            <path d="M44 -20 Q 98 4 44 28 Q 30 5 44 -20 Z" fill="#7d1f1f" stroke="#2f6330" stroke-width="5" />
+            <path d="M48 -7 Q 74 5 48 17 Q 44 5 48 -7 Z" fill="#e2657a" />
+            <!-- forked tongue -->
+            <path d="M64 5 q 26 0 42 -8 M64 5 q 26 0 42 10" stroke="#e23b57" stroke-width="5" fill="none" stroke-linecap="round" />
+            <!-- happy closed eyes ⌒ ⌒ (smiling) -->
+            <path d="M-42 -12 Q -24 -38 -6 -12" fill="none" stroke="#25341c" stroke-width="8" stroke-linecap="round" />
+            <path d="M2 -16 Q 20 -42 38 -16" fill="none" stroke="#25341c" stroke-width="8" stroke-linecap="round" />
+            <!-- sparkle glints -->
+            <circle cx="-2" cy="-20" r="4" fill="#ffffff" opacity="0.9" />
+            <circle cx="-38" cy="-16" r="3.4" fill="#ffffff" opacity="0.85" />
+            <!-- rosy cheeks -->
+            <ellipse cx="-34" cy="16" rx="16" ry="9" fill="#ff9d8a" opacity="0.6" />
+            <ellipse cx="14" cy="18" rx="14" ry="8" fill="#ff9d8a" opacity="0.6" />
+          </g>
+
+          <!-- sparkles -->
+          <g fill="#ffe9a8">
+            <path d="M470 70 l6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6 Z" opacity="0.9" />
+            <path d="M150 120 l4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 Z" opacity="0.75" />
+            <circle cx="440" cy="250" r="4" opacity="0.8" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </body>
+</html>

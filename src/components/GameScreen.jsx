@@ -51,6 +51,25 @@ export default function GameScreen({
     }
   }, [game.isSolved, onSolved, stage.id]);
 
+  // keyboard controls: arrow keys / WASD move the head, Backspace/Z steps back
+  const { step, undo } = game;
+  useEffect(() => {
+    const onKey = (e) => {
+      if (justWon || e.metaKey || e.ctrlKey || e.altKey) return;
+      switch (e.key) {
+        case "ArrowUp": case "w": case "W": step(-1, 0); break;
+        case "ArrowDown": case "s": case "S": step(1, 0); break;
+        case "ArrowLeft": case "a": case "A": step(0, -1); break;
+        case "ArrowRight": case "d": case "D": step(0, 1); break;
+        case "Backspace": case "z": case "Z": undo(); break;
+        default: return;
+      }
+      e.preventDefault();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [step, undo, justWon]);
+
   const isLast = index === totalStages - 1;
 
   return (
@@ -78,6 +97,11 @@ export default function GameScreen({
       <p className="hint-line">
         <b>1</b> 표지판에서 출발해 <b>모든 칸</b>을 한 번씩 지나 숫자를 순서대로
         이어보세요.
+      </p>
+      <p className="kbd-hint">
+        드래그 또는 <kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd>
+        <span className="kbd-alt">(WASD)</span> 방향키로 이동 ·{" "}
+        <kbd>⌫</kbd> 한 칸 되돌리기
       </p>
 
       {clearCount != null && (

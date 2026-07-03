@@ -9,11 +9,13 @@ const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = url && anonKey ? createClient(url, anonKey) : null;
 
 // Only these milestone stages have a counter column in the `snake-game` table.
-// stage id -> column: 3 -> count_3, 6 -> count_6, 10 -> count_10, 15 -> count_15
-export const MILESTONE_LEVELS = [3, 6, 10, 15];
+// stage id -> column: 3 -> count_3, 6 -> count_6, 10 -> count_10, 15 -> count_15,
+// 20 -> count_20, 25 -> count_25, 30 -> count_30
+export const MILESTONE_LEVELS = [3, 6, 10, 15, 20, 25, 30];
 
-// Which milestone a stage rolls up to (the end of its difficulty band):
-// 1..3 -> 3, 4..6 -> 6, 7..10 -> 10, 11..15 -> 15
+// Which milestone a stage rolls up to (the next checkpoint at or above it):
+// 1..3 -> 3, 4..6 -> 6, 7..10 -> 10, 11..15 -> 15, 16..20 -> 20, 21..25 -> 25,
+// 26..30 -> 30
 export function milestoneFor(stageId) {
   return MILESTONE_LEVELS.find((m) => stageId <= m) ?? MILESTONE_LEVELS.at(-1);
 }

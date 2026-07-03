@@ -276,6 +276,31 @@ button {
 .hint-line b {
   color: var(--accent);
 }
+.kbd-hint {
+  margin: 2px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+.kbd-hint kbd {
+  display: inline-block;
+  min-width: 1.1em;
+  padding: 1px 5px;
+  margin: 0 1px;
+  font-family: inherit;
+  font-size: 0.82em;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--panel-line);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+}
+.kbd-hint .kbd-alt {
+  opacity: 0.7;
+}
 .clear-count {
   margin: -4px 0 0;
   text-align: center;
