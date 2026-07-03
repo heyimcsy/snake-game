@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { STAGES } from "./game/stages.js";
-import { recordClear } from "./lib/supabase.js";
+import { recordClear, loadProgress, saveProgress } from "./lib/supabase.js";
 import StartScreen from "./components/StartScreen.jsx";
 import StageSelect from "./components/StageSelect.jsx";
 import GameScreen from "./components/GameScreen.jsx";
@@ -30,10 +30,36 @@ export default function App() {
     }
   }, [cleared]);
 
+  // On load, pull this user's saved progress from Supabase and merge it in, so a
+  // returning player resumes after their last cleared stage on any session.
+  // No-op (keeps the local cache) when Supabase is offline / not configured.
+  useEffect(() => {
+    let alive = true;
+    loadProgress().then((remote) => {
+      if (!alive || !remote || remote.length === 0) return;
+      setCleared((prev) => {
+        let changed = false;
+        const next = new Set(prev);
+        for (const id of remote) {
+          if (!next.has(id)) {
+            next.add(id);
+            changed = true;
+          }
+        }
+        return changed ? next : prev;
+      });
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const handleSolved = useCallback((id) => {
-    // bump the global clear counter for milestone levels (3/6/10/15/20/25/30).
-    // fire-and-forget: no-op unless Supabase is configured.
+    // bump the global clear counter for milestone levels (3/6/…/30/35/…/60) and
+    // persist this user's own progress. Both fire-and-forget: no-op unless
+    // Supabase is configured.
     recordClear(id);
+    saveProgress(id);
     setCleared((prev) => {
       if (prev.has(id)) return prev;
       const next = new Set(prev);
@@ -46,13 +72,26 @@ export default function App() {
     setIndex((i) => Math.min(STAGES.length - 1, i + 1));
   }, []);
 
+  // The stage to resume on: the first one not yet cleared (or the last stage if
+  // everything is done). Drives the "이어서 하기" button on the start screen.
+  const resumeIndex = useMemo(() => {
+    const i = STAGES.findIndex((s) => !cleared.has(s.id));
+    return i === -1 ? STAGES.length - 1 : i;
+  }, [cleared]);
+
   return (
     <div className="app">
       {screen === "start" && (
         <StartScreen
           onStart={() => setScreen("select")}
+          onContinue={() => {
+            setIndex(resumeIndex);
+            setScreen("game");
+          }}
           clearedCount={cleared.size}
           total={STAGES.length}
+          resumeStageId={STAGES[resumeIndex].id}
+          allCleared={cleared.size >= STAGES.length}
         />
       )}
 

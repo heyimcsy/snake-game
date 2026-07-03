@@ -1,4 +1,12 @@
-export default function StartScreen({ onStart, clearedCount, total }) {
+export default function StartScreen({
+  onStart,
+  onContinue,
+  clearedCount,
+  total,
+  resumeStageId,
+  allCleared,
+}) {
+  const hasProgress = clearedCount > 0 && !allCleared;
   return (
     <div className="screen start">
       <div className="canopy" aria-hidden="true">
@@ -21,13 +29,24 @@ export default function StartScreen({ onStart, clearedCount, total }) {
         <li>↔️ 상하좌우로만, 하나의 길로</li>
       </ul>
 
-      <button className="primary-btn big" onClick={onStart}>
-        시작하기
+      {hasProgress && (
+        <button className="primary-btn big" onClick={onContinue}>
+          이어서 하기 · STAGE {resumeStageId}
+        </button>
+      )}
+
+      <button
+        className={hasProgress ? "ghost-btn wide" : "primary-btn big"}
+        onClick={onStart}
+      >
+        {hasProgress ? "단계 선택" : "시작하기"}
       </button>
 
       {clearedCount > 0 && (
         <p className="cleared-note">
-          지금까지 {clearedCount} / {total} 단계 클리어 🌟
+          {allCleared
+            ? `🎉 전체 ${total}단계 완주! 🌟`
+            : `지금까지 ${clearedCount} / ${total} 단계 클리어 🌟`}
         </p>
       )}
     </div>

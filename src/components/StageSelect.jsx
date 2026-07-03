@@ -5,6 +5,9 @@ const BANDS = [
   { label: "고급", max: 15 },
   { label: "마스터", max: 22 },
   { label: "전설", max: 30 },
+  { label: "초월", max: 40 },
+  { label: "신화", max: 50 },
+  { label: "환상", max: 60 },
 ];
 
 function bandFor(id) {

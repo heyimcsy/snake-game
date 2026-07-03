@@ -1,8 +1,27 @@
 -- Run this once in the Supabase SQL Editor.
 -- Atomically bumps the global clear counter for a milestone level
--- (3/6/10/15/20/25/30) in the single-row "snake-game" table. SECURITY DEFINER
--- lets the anon client call it via rpc() without opening the table up to public
--- UPDATEs. (The count_20/count_25/count_30 columns must exist on the table.)
+-- (3/6/10/15/20/25/30, then every 5: 35/40/45/50/55/60) in the single-row
+-- "snake-game" table. SECURITY DEFINER lets the anon client call it via rpc()
+-- without opening the table up to public UPDATEs.
+--
+-- The milestone columns must exist on the table. If you add them yourself in the
+-- Supabase UI you can skip the ALTER below; it's included so this file is
+-- self-contained and safe to re-run (IF NOT EXISTS makes it idempotent).
+
+alter table "snake-game"
+  add column if not exists count_3  int default 0,
+  add column if not exists count_6  int default 0,
+  add column if not exists count_10 int default 0,
+  add column if not exists count_15 int default 0,
+  add column if not exists count_20 int default 0,
+  add column if not exists count_25 int default 0,
+  add column if not exists count_30 int default 0,
+  add column if not exists count_35 int default 0,
+  add column if not exists count_40 int default 0,
+  add column if not exists count_45 int default 0,
+  add column if not exists count_50 int default 0,
+  add column if not exists count_55 int default 0,
+  add column if not exists count_60 int default 0;
 
 create or replace function public.increment_snake_clear(level int)
 returns void
@@ -12,8 +31,11 @@ set search_path = public
 as $$
 begin
   -- make sure the single global row exists
-  insert into "snake-game" (count_3, count_6, count_10, count_15, count_20, count_25, count_30)
-  select 0, 0, 0, 0, 0, 0, 0
+  insert into "snake-game" (
+    count_3, count_6, count_10, count_15, count_20, count_25, count_30,
+    count_35, count_40, count_45, count_50, count_55, count_60
+  )
+  select 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   where not exists (select 1 from "snake-game");
 
   -- bump only the matching milestone column. Target the single row by its
@@ -27,7 +49,13 @@ begin
     count_15 = coalesce(count_15, 0) + (level = 15)::int,
     count_20 = coalesce(count_20, 0) + (level = 20)::int,
     count_25 = coalesce(count_25, 0) + (level = 25)::int,
-    count_30 = coalesce(count_30, 0) + (level = 30)::int
+    count_30 = coalesce(count_30, 0) + (level = 30)::int,
+    count_35 = coalesce(count_35, 0) + (level = 35)::int,
+    count_40 = coalesce(count_40, 0) + (level = 40)::int,
+    count_45 = coalesce(count_45, 0) + (level = 45)::int,
+    count_50 = coalesce(count_50, 0) + (level = 50)::int,
+    count_55 = coalesce(count_55, 0) + (level = 55)::int,
+    count_60 = coalesce(count_60, 0) + (level = 60)::int
   where ctid = (select ctid from "snake-game" limit 1);
 end;
 $$;
@@ -35,9 +63,8 @@ $$;
 grant execute on function public.increment_snake_clear(int) to anon, authenticated;
 
 
--- Read the current clear count for a milestone level (3/6/10/15/20/25/30).
--- SECURITY DEFINER so the anon client can read the count via rpc() without a
--- SELECT policy on the table.
+-- Read the current clear count for a milestone level. SECURITY DEFINER so the
+-- anon client can read the count via rpc() without a SELECT policy on the table.
 create or replace function public.get_snake_clear_count(level int)
 returns int
 language sql
@@ -53,6 +80,12 @@ as $$
     when 20 then count_20
     when 25 then count_25
     when 30 then count_30
+    when 35 then count_35
+    when 40 then count_40
+    when 45 then count_45
+    when 50 then count_50
+    when 55 then count_55
+    when 60 then count_60
     else null
   end
   from "snake-game"
@@ -68,5 +101,11 @@ grant execute on function public.get_snake_clear_count(int) to anon, authenticat
 update "snake-game" set
   count_20 = coalesce(count_20, 0),
   count_25 = coalesce(count_25, 0),
-  count_30 = coalesce(count_30, 0)
+  count_30 = coalesce(count_30, 0),
+  count_35 = coalesce(count_35, 0),
+  count_40 = coalesce(count_40, 0),
+  count_45 = coalesce(count_45, 0),
+  count_50 = coalesce(count_50, 0),
+  count_55 = coalesce(count_55, 0),
+  count_60 = coalesce(count_60, 0)
 where ctid = (select ctid from "snake-game" limit 1);

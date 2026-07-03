@@ -5,7 +5,7 @@ N×N 격자에서 **모든 칸을 한 번씩** 지나며 **숫자를 순서대�
 하나의 연속된 길을 완성하면 클리어됩니다.
 
 ## 규칙
-- 격자는 N×N (4×4 ~ 9×9).
+- 격자는 N×N (4×4 ~ 10×10).
 - 모든 칸을 정확히 한 번씩 방문.
 - 숫자 칸은 오름차순으로 통과 (1번 표지판에서 출발).
 - 상하좌우로만 이동, 하나의 끊기지 않은 길.
@@ -30,10 +30,10 @@ npm run preview    # 빌드 결과 미리보기
 ## 구조
 ```
 src/
-  App.jsx                 화면 전환(시작/단계선택/게임) + 진행도 저장(localStorage)
+  App.jsx                 화면 전환(시작/단계선택/게임) + 진행도 저장(localStorage + Supabase)
   game/
     logic.js              규칙 엔진 + useGame 훅 (이동/벽/순서 검증)
-    stages.js             자동 생성된 1~30단계 데이터 (유일해 검증됨)
+    stages.js             자동 생성된 1~60단계 데이터 (유일해 검증됨)
   components/
     StartScreen.jsx
     StageSelect.jsx
@@ -42,7 +42,7 @@ src/
   styles.css              숲속 테마
 tools/
   generate.mjs            퍼즐 생성기 (실제 해밀턴 경로 → 숫자/벽 배치 → 유일해 검증)
-  verify.mjs              30단계 정답 재생 검증
+  verify.mjs              60단계 정답 재생 검증
   browsertest.mjs         헤드리스 브라우저로 실제 플레이 후 클리어 확인
 ```
 

@@ -159,6 +159,16 @@ button {
   color: var(--muted);
   font-size: 0.9rem;
 }
+/* start screen can show two stacked buttons (이어서 하기 + 단계 선택) */
+.start .primary-btn.big + .ghost-btn.wide,
+.start .ghost-btn.wide {
+  margin-top: 10px;
+}
+.ghost-btn.wide {
+  align-self: center;
+  padding: 12px 30px;
+  font-size: 1rem;
+}
 
 /* ---------- stage select ---------- */
 .select-head,
