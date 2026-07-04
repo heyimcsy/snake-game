@@ -11,9 +11,9 @@ export const supabase = url && anonKey ? createClient(url, anonKey) : null;
 // Only these milestone stages have a counter column in the `snake-game` table.
 // stage id -> column: 3 -> count_3, 6 -> count_6, 10 -> count_10, 15 -> count_15,
 // 20 -> count_20, 25 -> count_25, 30 -> count_30, then every 5 stages:
-// 35 -> count_35 ... 60 -> count_60.
+// 35 -> count_35 ... 90 -> count_90.
 export const MILESTONE_LEVELS = [
-  3, 6, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60,
+  3, 6, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90,
 ];
 
 // Which milestone a stage rolls up to (the next checkpoint at or above it):

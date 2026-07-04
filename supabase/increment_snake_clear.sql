@@ -1,6 +1,6 @@
 -- Run this once in the Supabase SQL Editor.
 -- Atomically bumps the global clear counter for a milestone level
--- (3/6/10/15/20/25/30, then every 5: 35/40/45/50/55/60) in the single-row
+-- (3/6/10/15/20/25/30, then every 5: 35/40/…/90) in the single-row
 -- "snake-game" table. SECURITY DEFINER lets the anon client call it via rpc()
 -- without opening the table up to public UPDATEs.
 --
@@ -21,7 +21,13 @@ alter table "snake-game"
   add column if not exists count_45 int default 0,
   add column if not exists count_50 int default 0,
   add column if not exists count_55 int default 0,
-  add column if not exists count_60 int default 0;
+  add column if not exists count_60 int default 0,
+  add column if not exists count_65 int default 0,
+  add column if not exists count_70 int default 0,
+  add column if not exists count_75 int default 0,
+  add column if not exists count_80 int default 0,
+  add column if not exists count_85 int default 0,
+  add column if not exists count_90 int default 0;
 
 create or replace function public.increment_snake_clear(level int)
 returns void
@@ -33,9 +39,10 @@ begin
   -- make sure the single global row exists
   insert into "snake-game" (
     count_3, count_6, count_10, count_15, count_20, count_25, count_30,
-    count_35, count_40, count_45, count_50, count_55, count_60
+    count_35, count_40, count_45, count_50, count_55, count_60,
+    count_65, count_70, count_75, count_80, count_85, count_90
   )
-  select 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  select 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
   where not exists (select 1 from "snake-game");
 
   -- bump only the matching milestone column. Target the single row by its
@@ -55,7 +62,13 @@ begin
     count_45 = coalesce(count_45, 0) + (level = 45)::int,
     count_50 = coalesce(count_50, 0) + (level = 50)::int,
     count_55 = coalesce(count_55, 0) + (level = 55)::int,
-    count_60 = coalesce(count_60, 0) + (level = 60)::int
+    count_60 = coalesce(count_60, 0) + (level = 60)::int,
+    count_65 = coalesce(count_65, 0) + (level = 65)::int,
+    count_70 = coalesce(count_70, 0) + (level = 70)::int,
+    count_75 = coalesce(count_75, 0) + (level = 75)::int,
+    count_80 = coalesce(count_80, 0) + (level = 80)::int,
+    count_85 = coalesce(count_85, 0) + (level = 85)::int,
+    count_90 = coalesce(count_90, 0) + (level = 90)::int
   where ctid = (select ctid from "snake-game" limit 1);
 end;
 $$;
@@ -86,6 +99,12 @@ as $$
     when 50 then count_50
     when 55 then count_55
     when 60 then count_60
+    when 65 then count_65
+    when 70 then count_70
+    when 75 then count_75
+    when 80 then count_80
+    when 85 then count_85
+    when 90 then count_90
     else null
   end
   from "snake-game"
@@ -107,5 +126,11 @@ update "snake-game" set
   count_45 = coalesce(count_45, 0),
   count_50 = coalesce(count_50, 0),
   count_55 = coalesce(count_55, 0),
-  count_60 = coalesce(count_60, 0)
+  count_60 = coalesce(count_60, 0),
+  count_65 = coalesce(count_65, 0),
+  count_70 = coalesce(count_70, 0),
+  count_75 = coalesce(count_75, 0),
+  count_80 = coalesce(count_80, 0),
+  count_85 = coalesce(count_85, 0),
+  count_90 = coalesce(count_90, 0)
 where ctid = (select ctid from "snake-game" limit 1);

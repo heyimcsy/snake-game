@@ -55,7 +55,7 @@ export default function App() {
   }, []);
 
   const handleSolved = useCallback((id) => {
-    // bump the global clear counter for milestone levels (3/6/…/30/35/…/60) and
+    // bump the global clear counter for milestone levels (3/6/…/30/35/…/90) and
     // persist this user's own progress. Both fire-and-forget: no-op unless
     // Supabase is configured.
     recordClear(id);

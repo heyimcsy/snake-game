@@ -235,8 +235,39 @@ function wallsToArray(wallSet) {
   });
 }
 
+// ---------- prune to a MINIMAL wall set (for "open" boards) ----------
+// Given a wall set that already forces a unique solution, drop every wall that
+// isn't load-bearing: remove it, and if the solution is still unique keep it
+// removed. The result is the fewest walls that still pin the answer — a more
+// OPEN board where the path direction is far less forced, which plays harder
+// (fewer forced corridors to coast along). Only used for the later stages.
+function pruneWalls(N, grid, wallSet, rng, minKeep = 0, maxMs = 20000) {
+  const keep = new Set(wallSet);
+  // Bound each uniqueness re-check: on an open board a full "confirm unique"
+  // search is expensive, so cap the node budget. A wall we can't clear within
+  // the budget is conservatively kept (treated as load-bearing) — this bounds
+  // per-check time and keeps us to boards whose uniqueness we can still verify.
+  const NODE_BUDGET = 45000;
+  // Two stop conditions keep generation bounded no matter how nasty a seed is:
+  //   1. minKeep — stop once the board is open enough (the deep, near-minimal
+  //      removals are by far the priciest to verify, so this floor is the main
+  //      practical lever). Lower floor = more open = harder.
+  //   2. maxMs — a hard wall-clock cap. A rare pathological seed can't reach its
+  //      floor within budget; rather than grind for minutes we stop early and
+  //      keep the extra walls. The board stays unique + solvable, just a little
+  //      less open. Bounds every stage to pre-prune time + maxMs.
+  const deadline = Date.now() + maxMs;
+  for (const e of shuffle([...wallSet], rng)) {
+    if (keep.size <= minKeep || Date.now() > deadline) break;
+    keep.delete(e);
+    const res = countSolutions(N, grid, keep, NODE_BUDGET);
+    if (res.aborted || res.count !== 1) keep.add(e); // load-bearing → put back
+  }
+  return keep;
+}
+
 // ---------- generate one stage ----------
-export function generateStage(N, numCount, targetWalls, rng, seedBase) {
+export function generateStage(N, numCount, targetWalls, rng, seedBase, pruneTo = 0) {
   let fallback = null;
   const maxAttempts = 600;
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -259,18 +290,26 @@ export function generateStage(N, numCount, targetWalls, rng, seedBase) {
       res = countSolutions(N, grid, wallSet);
     }
 
-    const stage = {
-      size: N,
-      numbers,
-      walls: wallsToArray(wallSet),
-      solution: path.map(([r, c]) => [r, c]),
-    };
-
     if (!res.aborted && res.count === 1) {
-      return { ...stage, unique: true };
+      const finalWalls =
+        pruneTo > 0 ? pruneWalls(N, grid, wallSet, rng, pruneTo) : wallSet;
+      return {
+        size: N,
+        numbers,
+        walls: wallsToArray(finalWalls),
+        solution: path.map(([r, c]) => [r, c]),
+        unique: true,
+      };
     }
     // keep first solvable (built from a real path -> always solvable) as fallback
-    if (!fallback) fallback = { ...stage, unique: false };
+    if (!fallback)
+      fallback = {
+        size: N,
+        numbers,
+        walls: wallsToArray(wallSet),
+        solution: path.map(([r, c]) => [r, c]),
+        unique: false,
+      };
   }
   return fallback;
 }
@@ -349,6 +388,44 @@ const CONFIGS = [
   { N: 10, nums: 6, walls: 52 }, // 58
   { N: 10, nums: 5, walls: 52 }, // 59
   { N: 10, nums: 6, walls: 52 }, // 60  ← milestone
+  // ---- 심연 / 혼돈 / 무한 (61–90): 10×10, OPEN boards. ------------------------
+  // Player feedback: stages with FEWER walls play harder — with less forced
+  // direction you must plan the whole route yourself instead of coasting down
+  // forced corridors. So here we seed near the uniqueness threshold (base 48,
+  // fast to generate) and then PRUNE walls down to `prune` — the fewest walls
+  // that still pin a unique solution we can verify. Lower `prune` = more open =
+  // harder (and slower to generate). nums stays 9 so the low floors stay
+  // reachable/fast. See generateStage(..., pruneTo) + pruneWalls().
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 61  심연
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 62
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 63
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 64
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 65  ← milestone
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 66
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 67
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 68
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 69
+  { N: 10, nums: 9, walls: 48, prune: 50 }, // 70  ← milestone
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 71  혼돈
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 72
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 73
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 74
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 75  ← milestone
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 76
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 77
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 78
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 79
+  { N: 10, nums: 9, walls: 48, prune: 46 }, // 80  ← milestone
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 81  무한
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 82
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 83
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 84
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 85  ← milestone
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 86
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 87
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 88
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 89
+  { N: 10, nums: 9, walls: 48, prune: 44 }, // 90  ← milestone
 ];
 
 function main() {
@@ -356,7 +433,7 @@ function main() {
   CONFIGS.forEach((cfg, i) => {
     const rng = mulberry32(1000 + i * 7919);
     const t0 = Date.now();
-    const s = generateStage(cfg.N, cfg.nums, cfg.walls, rng, i);
+    const s = generateStage(cfg.N, cfg.nums, cfg.walls, rng, i, cfg.prune ?? 0);
     const stage = {
       id: i + 1,
       size: s.size,

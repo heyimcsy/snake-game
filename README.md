@@ -33,7 +33,7 @@ src/
   App.jsx                 화면 전환(시작/단계선택/게임) + 진행도 저장(localStorage + Supabase)
   game/
     logic.js              규칙 엔진 + useGame 훅 (이동/벽/순서 검증)
-    stages.js             자동 생성된 1~60단계 데이터 (유일해 검증됨)
+    stages.js             자동 생성된 1~90단계 데이터 (유일해 검증됨)
   components/
     StartScreen.jsx
     StageSelect.jsx
@@ -42,8 +42,12 @@ src/
   styles.css              숲속 테마
 tools/
   generate.mjs            퍼즐 생성기 (실제 해밀턴 경로 → 숫자/벽 배치 → 유일해 검증)
-  verify.mjs              60단계 정답 재생 검증
+  verify.mjs              90단계 정답 재생 검증
   browsertest.mjs         헤드리스 브라우저로 실제 플레이 후 클리어 확인
+
+후반 단계(61~90 · 심연/혼돈/무한)는 **벽을 일부러 적게** 두어 이동 방향이
+덜 고정되도록 설계했습니다. 대신 숫자 단서를 늘려 유일해를 유지하므로,
+좁은 외길을 따라가는 대신 열린 격자에서 경로를 스스로 계획해야 해 더 어렵습니다.
 ```
 
 ## 퍼즐 재생성 / 검증

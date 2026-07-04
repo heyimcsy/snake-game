@@ -8,6 +8,9 @@ const BANDS = [
   { label: "초월", max: 40 },
   { label: "신화", max: 50 },
   { label: "환상", max: 60 },
+  { label: "심연", max: 70 },
+  { label: "혼돈", max: 80 },
+  { label: "무한", max: 90 },
 ];
 
 function bandFor(id) {
